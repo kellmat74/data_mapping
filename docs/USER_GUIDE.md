@@ -229,4 +229,13 @@ Contact your automation team if you:
 
 ---
 
+## PHI/HIPAA Considerations
+
+- **No data leaves your machine** - This tool runs entirely in your browser. Your placement files and mapping data are never transmitted to any server.
+- **Placement files are processed locally only** - Files containing PHI are read and processed in your browser's memory.
+- **Exported JSON contains only payer names** - The output files do not include patient data, only payer/plan mapping information.
+- **Browser storage persists until cleared** - Your saved mappings remain in your browser's localStorage until you manually clear them or clear your browser data. If your computer is shared or contains PHI, consider clearing saved data when finished.
+
+---
+
 *Last updated: December 2025*
