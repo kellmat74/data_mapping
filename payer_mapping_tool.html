@@ -114,6 +114,27 @@
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.success { background: #27ae60; }
         .toast.error { background: #e74c3c; }
+        .client-section {
+            display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .client-input {
+            flex: 1; min-width: 200px; padding: 12px 15px; border: 2px solid #3498db;
+            border-radius: 5px; font-size: 1em;
+        }
+        .client-input:focus { outline: none; border-color: #2980b9; box-shadow: 0 0 0 3px rgba(52,152,219,0.2); }
+        .client-status {
+            padding: 8px 15px; border-radius: 5px; font-size: 0.9em; font-weight: 500;
+        }
+        .client-status.loaded { background: #e8f5e9; color: #27ae60; }
+        .client-status.new { background: #fff3e0; color: #e67e22; }
+        .btn-clear { background: #e74c3c; color: white; padding: 8px 15px; font-size: 0.85em; }
+        .btn-clear:hover { background: #c0392b; }
+        .auto-save-indicator {
+            position: fixed; top: 20px; right: 20px; background: #27ae60; color: white;
+            padding: 8px 15px; border-radius: 5px; font-size: 0.85em;
+            opacity: 0; transition: opacity 0.3s; z-index: 1000;
+        }
+        .auto-save-indicator.show { opacity: 1; }
         @media (max-width: 768px) {
             .upload-section { grid-template-columns: 1fr; }
             .action-buttons { flex-direction: column; }
@@ -125,6 +146,16 @@
     <div class="container">
         <h1>Payer Mapping Tool</h1>
         <p class="subtitle">Map placement file payers to Availity payers for claim status automation</p>
+
+        <div class="card">
+            <h2>Client Setup</h2>
+            <div class="client-section">
+                <input type="text" class="client-input" id="clientName" placeholder="Enter your organization name (e.g., UTSW)">
+                <span class="client-status hidden" id="clientStatus"></span>
+                <button class="btn btn-clear hidden" id="clearDataBtn">Clear Saved Data</button>
+            </div>
+            <p style="color: #666; font-size: 0.85em;">Your mappings are automatically saved in this browser. Enter the same name each week to load your previous work.</p>
+        </div>
 
         <div class="card">
             <h2>Step 1: Upload Files</h2>
@@ -186,6 +217,7 @@
     </div>
 
     <div class="toast" id="toast"></div>
+    <div class="auto-save-indicator" id="autoSaveIndicator">Mappings saved</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
@@ -216,12 +248,99 @@
     let plansByState = {};
     let currentMappings = {};
     let currentFilter = 'all';
+    let clientName = '';
 
     document.addEventListener('DOMContentLoaded', () => {
+        setupClientHandler();
         setupFileHandlers();
         setupFilterButtons();
         setupSearch();
     });
+
+    function setupClientHandler() {
+        const clientInput = document.getElementById('clientName');
+        const clientStatus = document.getElementById('clientStatus');
+        const clearBtn = document.getElementById('clearDataBtn');
+
+        // Load client name from sessionStorage (for current session continuity)
+        const savedClientName = sessionStorage.getItem('currentClient');
+        if (savedClientName) {
+            clientInput.value = savedClientName;
+            loadClientData(savedClientName);
+        }
+
+        // Debounce client name input
+        let debounceTimer;
+        clientInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const name = e.target.value.trim();
+                if (name.length >= 2) {
+                    clientName = name;
+                    sessionStorage.setItem('currentClient', name);
+                    loadClientData(name);
+                } else {
+                    clientStatus.classList.add('hidden');
+                    clearBtn.classList.add('hidden');
+                }
+            }, 500);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all saved mappings for "' + clientName + '"? This cannot be undone.')) {
+                localStorage.removeItem('payerMapping_' + clientName);
+                currentMappings = {};
+                renderMappingInterface();
+                updateStats();
+                clientStatus.textContent = 'Data cleared - starting fresh';
+                clientStatus.className = 'client-status new';
+                showToast('Saved data cleared for ' + clientName, 'success');
+            }
+        });
+    }
+
+    function loadClientData(name) {
+        const clientStatus = document.getElementById('clientStatus');
+        const clearBtn = document.getElementById('clearDataBtn');
+        const savedData = localStorage.getItem('payerMapping_' + name);
+
+        if (savedData) {
+            try {
+                const data = JSON.parse(savedData);
+                currentMappings = data.mappings || {};
+                const mappingCount = Object.keys(currentMappings).length;
+                clientStatus.textContent = 'Loaded ' + mappingCount + ' saved mappings';
+                clientStatus.className = 'client-status loaded';
+                clearBtn.classList.remove('hidden');
+                renderMappingInterface();
+                updateStats();
+                showToast('Welcome back! Loaded ' + mappingCount + ' previous mappings', 'success');
+            } catch (e) {
+                clientStatus.textContent = 'New client - no saved data';
+                clientStatus.className = 'client-status new';
+            }
+        } else {
+            clientStatus.textContent = 'New client - no saved data yet';
+            clientStatus.className = 'client-status new';
+            clearBtn.classList.add('hidden');
+        }
+        clientStatus.classList.remove('hidden');
+    }
+
+    function autoSaveToLocalStorage() {
+        if (!clientName) return;
+        const data = {
+            clientName: clientName,
+            lastUpdated: new Date().toISOString(),
+            mappings: currentMappings
+        };
+        localStorage.setItem('payerMapping_' + clientName, JSON.stringify(data));
+
+        // Show auto-save indicator
+        const indicator = document.getElementById('autoSaveIndicator');
+        indicator.classList.add('show');
+        setTimeout(() => indicator.classList.remove('show'), 1500);
+    }
 
     function setupFileHandlers() {
         document.getElementById('placementFile').addEventListener('change', handlePlacementFile);
@@ -398,8 +517,8 @@
         sortedStates.forEach(state => {
             let plans = plansByState[state];
             if (searchTerm) plans = plans.filter(p => p.planName.toLowerCase().includes(searchTerm));
-            if (currentFilter === 'mapped') plans = plans.filter(p => currentMappings[p.planName]?.availityPayerId);
-            else if (currentFilter === 'unmapped') plans = plans.filter(p => !currentMappings[p.planName]?.availityPayerId);
+            if (currentFilter === 'mapped') plans = plans.filter(p => currentMappings[state + '|' + p.planName]?.availityPayerId);
+            else if (currentFilter === 'unmapped') plans = plans.filter(p => !currentMappings[state + '|' + p.planName]?.availityPayerId);
             if (plans.length === 0) return;
 
             const stateSection = document.createElement('div');
@@ -418,7 +537,8 @@
     }
 
     function renderPlanRow(plan, state) {
-        const mapping = currentMappings[plan.planName];
+        const mappingKey = state + '|' + plan.planName;
+        const mapping = currentMappings[mappingKey];
         const isMapped = mapping?.availityPayerId;
         const isNotAvailable = mapping?.availityPayerId === 'not available';
         const isUHC = mapping?.availityPayerId === 'UHC';
@@ -444,12 +564,14 @@
     function handlePayerSelection(e) {
         const select = e.target;
         const planName = select.dataset.plan;
+        const state = select.dataset.state;
+        const mappingKey = state + '|' + planName;
         const payerId = select.value;
         const selectedOption = select.options[select.selectedIndex];
         const payerName = selectedOption.dataset?.payerName || payerId;
 
-        if (payerId) currentMappings[planName] = { availityPayerId: payerId, availityPayerName: payerName };
-        else delete currentMappings[planName];
+        if (payerId) currentMappings[mappingKey] = { availityPayerId: payerId, availityPayerName: payerName };
+        else delete currentMappings[mappingKey];
 
         const row = select.closest('tr');
         row.classList.remove('mapped', 'unmapped');
@@ -458,12 +580,15 @@
         if (payerId === 'not available' || payerId === 'UHC' || payerId === 'Superior') { row.classList.add('unmapped'); select.classList.add('not-available'); }
         else if (payerId) { row.classList.add('mapped'); select.classList.add('mapped'); }
         updateStats();
+        autoSaveToLocalStorage();
     }
 
     function applyMappingsToInterface() {
         document.querySelectorAll('.payer-select').forEach(select => {
             const planName = select.dataset.plan;
-            const mapping = currentMappings[planName];
+            const state = select.dataset.state;
+            const mappingKey = state + '|' + planName;
+            const mapping = currentMappings[mappingKey];
             if (mapping) { select.value = mapping.availityPayerId; select.dispatchEvent(new Event('change')); }
         });
         renderMappingInterface();
@@ -471,9 +596,15 @@
     }
 
     function updateStats() {
-        const allPlans = Object.values(plansByState).flat();
-        const total = allPlans.length;
-        const mapped = allPlans.filter(p => currentMappings[p.planName]?.availityPayerId).length;
+        let total = 0;
+        let mapped = 0;
+        Object.entries(plansByState).forEach(([state, plans]) => {
+            plans.forEach(plan => {
+                total++;
+                const mappingKey = state + '|' + plan.planName;
+                if (currentMappings[mappingKey]?.availityPayerId) mapped++;
+            });
+        });
         document.getElementById('totalPlans').textContent = total;
         document.getElementById('mappedPlans').textContent = mapped;
         document.getElementById('unmappedPlans').textContent = total - mapped;
@@ -484,16 +615,18 @@
     }
 
     function saveMappingProgress() {
-        const output = { clientName: 'Client', lastUpdated: new Date().toISOString().split('T')[0], mappings: currentMappings };
-        downloadJson(output, 'payer_mapping_progress.json');
-        showToast('Mapping progress saved', 'success');
+        const name = clientName || 'Client';
+        const output = { clientName: name, lastUpdated: new Date().toISOString().split('T')[0], mappings: currentMappings };
+        downloadJson(output, 'payer_mapping_' + name + '.json');
+        showToast('Mapping progress saved to file', 'success');
     }
 
     function exportForUiPath() {
         const outputByPayerState = {};
-        Object.values(plansByState).forEach(plans => {
+        Object.entries(plansByState).forEach(([state, plans]) => {
             plans.forEach(plan => {
-                const mapping = currentMappings[plan.planName];
+                const mappingKey = state + '|' + plan.planName;
+                const mapping = currentMappings[mappingKey];
                 if (!mapping) return;
                 const payerId = mapping.availityPayerId;
                 const stateAbbrev = plan.stateAbbrev;
@@ -509,7 +642,8 @@
             if (a.LocationCode !== b.LocationCode) return a.LocationCode.localeCompare(b.LocationCode);
             return a.AvailityPayerID.localeCompare(b.AvailityPayerID);
         });
-        downloadJson(output, 'payer_mapping_uipath.json');
+        const name = clientName || 'Client';
+        downloadJson(output, name + '_uipath.json');
         showToast('UiPath JSON exported', 'success');
     }
 
