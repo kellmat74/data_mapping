@@ -12,6 +12,7 @@ A standalone tool for mapping placement file payers to Availity payers for claim
 4. [Understanding the Interface](#understanding-the-interface)
 5. [Exporting Your Work](#exporting-your-work)
 6. [Tips & Troubleshooting](#tips--troubleshooting)
+7. [PHI/HIPAA Considerations](#phihipaa-considerations)
 
 ---
 
@@ -23,7 +24,7 @@ A standalone tool for mapping placement file payers to Availity payers for claim
 2. Double-click the file to open it in your web browser (Chrome, Edge, or Firefox recommended)
 3. No installation or internet connection required after initial load
 
-> **Screenshot suggestion:** Show the HTML file icon on desktop
+![Initial State](screenshots/01_initial_state.png)
 
 ---
 
@@ -38,8 +39,6 @@ Each week when you receive a new placement file:
 5. Export the UiPath JSON file
 6. Send the JSON file to your automation team
 
-> **Screenshot suggestion:** Flowchart or numbered diagram of weekly steps
-
 ---
 
 ## Step-by-Step Instructions
@@ -52,29 +51,46 @@ When you open the tool, you'll see a "Client Setup" section at the top.
 2. **Use the exact same name each week** - this is how the tool remembers your previous mappings
 3. If you've used the tool before, you'll see "Loaded X saved mappings" appear
 
-> **Screenshot suggestion:** Client Setup section with name entered and "Loaded 45 saved mappings" status
+![Client Name Entry](screenshots/02_client_name_new.png)
 
-**Important:** Your mappings are saved in your browser. If you switch to a different computer or browser, you'll need to use the backup file (see [Backing Up Your Work](#backing-up-your-work)).
+**Important:** Your mappings are saved in your browser's local storage. If you switch to a different computer or browser, you'll need to use the backup file (see [Backing Up Your Work](#backing-up-your-work)).
 
 ---
 
-### Step 2: Upload Your Placement File
+### Step 2: Upload Your Files
+
+#### Placement File (Required)
 
 1. Click "Choose File" under "Placement File"
 2. Select your weekly placement file (.xlsx or .csv format)
 3. The tool will analyze the file and display all unique payers grouped by state
 
-> **Screenshot suggestion:** File upload section with a file selected, showing the green checkmark
+![File Upload](screenshots/03_file_upload.png)
 
-After uploading, you'll see:
-- **Mapping Progress** section showing total plans, mapped, and unmapped counts
-- **Map Payers** section with plans organized by state
+#### Previous Mapping (Optional)
+
+If you have a saved mapping file or a previous UiPath output file, you can upload it to pre-populate your mappings:
+
+1. Click "Choose File" under "Previous Mapping"
+2. Select either:
+   - A saved mapping progress file (`.json` from "Save Mapping Progress")
+   - A UiPath output file (`.json` from "Export for UiPath")
+3. The tool auto-detects the format and imports the mappings
+
+![UiPath Import](screenshots/13_uipath_import.png)
+
+This is useful for:
+- Restoring work on a new computer
+- Seeing how an existing UiPath config would apply to a new placement file
+- Reviewing which payers from a new file are already mapped vs. need attention
 
 ---
 
 ### Step 3: Map Your Payers
 
-Each payer in your placement file needs to be mapped to an Availity payer.
+After uploading, you'll see the mapping interface with plans organized by state.
+
+![Mapping Interface](screenshots/04_mapping_interface.png)
 
 For each unmapped payer:
 
@@ -82,7 +98,7 @@ For each unmapped payer:
 2. Click the dropdown next to the payer name
 3. Select the appropriate Availity payer from the list
 
-> **Screenshot suggestion:** Dropdown menu expanded showing Availity payer options
+![Dropdown Options](screenshots/06_dropdown_options.png)
 
 #### Special Options
 
@@ -91,10 +107,8 @@ At the top of each dropdown, you'll find these special options:
 | Option | When to Use |
 |--------|-------------|
 | **Not Available** | Payer cannot be processed through any portal |
-| **UHC Portal** | Payer should be processed through the UHC portal instead |
-| **Superior Portal** | Payer should be processed through the Superior portal instead |
-
-> **Screenshot suggestion:** Dropdown showing the special options at top
+| **UHC Portal** | Payer should be processed through the UHC portal instead of Availity |
+| **Superior Portal** | Payer should be processed through the Superior portal instead of Availity |
 
 #### Visual Indicators
 
@@ -102,7 +116,7 @@ At the top of each dropdown, you'll find these special options:
 - **Orange row** = Marked as Not Available, UHC, or Superior
 - **White row** = Not yet mapped
 
-> **Screenshot suggestion:** Side-by-side comparison of green, orange, and white rows
+![Partial Mapping](screenshots/07_partial_mapping.png)
 
 ---
 
@@ -114,9 +128,11 @@ Above the mapping table, you'll find filter buttons:
 - **Unmapped Only** - Shows only payers you haven't mapped yet (helpful for finding what's left)
 - **Mapped Only** - Shows only completed mappings
 
-> **Screenshot suggestion:** Filter buttons with "Unmapped Only" selected
+![Filter Unmapped](screenshots/08_filter_unmapped.png)
 
 Use the **search box** to quickly find specific payers by name.
+
+![Search](screenshots/09_search.png)
 
 ---
 
@@ -124,7 +140,7 @@ Use the **search box** to quickly find specific payers by name.
 
 ### Progress Statistics
 
-The Mapping Progress section shows:
+The Mapping Progress section shows your completion status:
 
 | Stat | Meaning |
 |------|---------|
@@ -135,17 +151,22 @@ The Mapping Progress section shows:
 
 The progress bar shows your overall completion percentage.
 
-> **Screenshot suggestion:** Progress statistics section
+![Progress Stats](screenshots/05_progress_stats.png)
 
 ### State Sections
 
-Payers are grouped by state because the same payer name may need different Availity mappings in different states. Each state section shows:
+Payers are grouped by state because the same payer name may need different Availity mappings in different states. For example, "BCBS" in Texas might map to a different Availity payer ID than "BCBS" in California.
 
+Each state section shows:
 - State name and abbreviation
 - Number of plans in that state
 - Table of payers with their volume (account count) and mapping dropdown
 
-> **Screenshot suggestion:** A state section header with the table below it
+### Auto-Save
+
+Every time you select a mapping, you'll briefly see "Mappings saved" appear in the top-right corner. Your work is automatically saved to your browser - no need to manually save unless you want a backup file.
+
+![Auto Save](screenshots/11_auto_save.png)
 
 ---
 
@@ -161,7 +182,7 @@ When you've finished mapping:
 
 The file will be named `[YourOrgName]_uipath.json`
 
-> **Screenshot suggestion:** Export button and save dialog
+![Export Buttons](screenshots/10_export_buttons.png)
 
 ### Backing Up Your Work (Recommended)
 
@@ -173,17 +194,9 @@ Your mappings are automatically saved in your browser, but it's good practice to
 
 The backup file will be named `payer_mapping_[YourOrgName].json`
 
-> **Screenshot suggestion:** Save Mapping Progress button
-
 ---
 
 ## Tips & Troubleshooting
-
-### Auto-Save Feature
-
-Every time you select a mapping, you'll briefly see "Mappings saved" appear in the top-right corner. Your work is automatically saved - no need to manually save unless you want a backup file.
-
-> **Screenshot suggestion:** Auto-save indicator in top right
 
 ### Switching Computers
 
@@ -191,6 +204,8 @@ Your mappings are stored in your browser's local storage. If you need to work on
 
 1. On your original computer: Click "Save Mapping Progress" to download your mappings
 2. On the new computer: Open the tool, enter your org name, then upload the mapping file under "Previous Mapping (Optional)"
+
+Alternatively, you can upload a previous UiPath output file to restore mappings.
 
 ### Clearing Saved Data
 
@@ -202,12 +217,10 @@ If you need to start fresh:
 
 **Warning:** This cannot be undone. Make sure to save a backup first if needed.
 
-> **Screenshot suggestion:** Clear Saved Data confirmation dialog
-
 ### Common Questions
 
 **Q: Why do I see the same payer name in multiple states?**
-A: Each state may have different Availity payer options. A payer like "BCBS" in Texas might map to a different Availity ID than "BCBS" in California.
+A: Each state may have different Availity payer options. A payer like "BCBS" in Texas might map to a different Availity ID than "BCBS" in California. You need to map each state separately.
 
 **Q: What if I can't find the right Availity payer?**
 A: Select "Not Available" and notify your automation team. They can investigate and potentially add it to the Availity list.
@@ -218,14 +231,14 @@ A: No. The tool runs entirely in your browser. Your data never leaves your compu
 **Q: What browsers work with this tool?**
 A: Chrome, Edge, and Firefox are recommended. Safari may work but is not fully tested.
 
----
+**Q: Can I import an old UiPath JSON file?**
+A: Yes! Upload it under "Previous Mapping (Optional)" and the tool will convert it to the internal format automatically.
 
-## Need Help?
+### Version Information
 
-Contact your automation team if you:
-- Can't find an appropriate Availity payer for a mapping
-- Notice payers that should be added to the Availity list
-- Experience technical issues with the tool
+The current version is displayed in the footer of the tool. If you're experiencing issues, check that you have the latest version.
+
+![Footer Version](screenshots/12_footer_version.png)
 
 ---
 
@@ -235,6 +248,15 @@ Contact your automation team if you:
 - **Placement files are processed locally only** - Files containing PHI are read and processed in your browser's memory.
 - **Exported JSON contains only payer names** - The output files do not include patient data, only payer/plan mapping information.
 - **Browser storage persists until cleared** - Your saved mappings remain in your browser's localStorage until you manually clear them or clear your browser data. If your computer is shared or contains PHI, consider clearing saved data when finished.
+
+---
+
+## Need Help?
+
+Contact your automation team if you:
+- Can't find an appropriate Availity payer for a mapping
+- Notice payers that should be added to the Availity list
+- Experience technical issues with the tool
 
 ---
 

@@ -1,0 +1,27 @@
+{
+  "name": "data_mapping",
+  "version": "1.0.0",
+  "description": "A data mapping project.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kellmat74/data_mapping.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kellmat74/data_mapping/issues"
+  },
+  "homepage": "https://github.com/kellmat74/data_mapping#readme",
+  "dependencies": {
+    "puppeteer": "^24.32.0"
+  }
+}
