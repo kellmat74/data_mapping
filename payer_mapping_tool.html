@@ -226,7 +226,7 @@
     </div>
 
     <footer style="text-align: center; color: #999; font-size: 0.8em; margin-top: 40px; padding: 20px;">
-        Payer Mapping Tool v3.0
+        Payer Mapping Tool v4.0
     </footer>
 
     <div class="toast" id="toast"></div>
@@ -695,9 +695,7 @@
                 const stateAbbrev = plan.stateAbbrev;
                 const key = stateAbbrev + '|' + payerId;
                 if (!outputByPayerState[key]) {
-                    // Look up schema from PAGE_SCHEMAS, default to 0 if not found
-                    const schemaType = PAGE_SCHEMAS.hasOwnProperty(payerId) ? PAGE_SCHEMAS[payerId] : 0;
-                    outputByPayerState[key] = { LocationCode: stateAbbrev, AvailityPayerID: payerId, ClaimDataPageLayoutType: schemaType, Queues: [] };
+                    outputByPayerState[key] = { LocationCode: stateAbbrev, AvailityPayerID: payerId, ClaimDataPageLayoutType: 1, Queues: [] };
                 }
                 const queueName = plan.planName + ', ' + stateAbbrev;
                 if (!outputByPayerState[key].Queues.includes(queueName)) outputByPayerState[key].Queues.push(queueName);
