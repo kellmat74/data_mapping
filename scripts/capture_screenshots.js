@@ -6,7 +6,7 @@ const fs = require('fs');
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const SCREENSHOTS_DIR = path.join(__dirname, '../docs/screenshots');
-const HTML_FILE = path.join(__dirname, '../payer_mapping_tool.html');
+const HTML_FILE = path.join(__dirname, '../index.html');
 const PLACEMENT_FILE = path.join(__dirname, '../references/Placement Files/Claim Status Request UTSWD 11.19.25 (CLEAN).xlsx');
 const UIPATH_FILE = path.join(__dirname, '../references/UiPath Mapping/UTSW payer_mapping_uipath (original).json');
 

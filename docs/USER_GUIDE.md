@@ -20,7 +20,7 @@ A standalone tool for mapping placement file payers to Availity payers for claim
 
 ### First-Time Setup
 
-1. Save the `payer_mapping_tool.html` file to your computer
+1. Save the `index.html` file to your computer
 2. Double-click the file to open it in your web browser (Chrome, Edge, or Firefox recommended)
 3. No installation or internet connection required after initial load
 
