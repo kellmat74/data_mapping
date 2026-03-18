@@ -169,8 +169,8 @@
                 </div>
                 <div class="upload-box" id="mappingDropZone">
                     <h3>Previous Mapping (Optional)</h3>
-                    <p>Upload saved mapping or UiPath output (.json)</p>
-                    <input type="file" id="mappingFile" accept=".json">
+                    <p>Upload saved mapping (.xlsx/.json) or UiPath output (.json)</p>
+                    <input type="file" id="mappingFile" accept=".json,.xlsx">
                     <button class="upload-btn" onclick="document.getElementById('mappingFile').click()">Choose File</button>
                     <div class="file-name" id="mappingFileName"></div>
                 </div>
@@ -226,7 +226,7 @@
     </div>
 
     <footer style="text-align: center; color: #999; font-size: 0.8em; margin-top: 40px; padding: 20px;">
-        Payer Mapping Tool v4.1
+        Payer Mapping Tool v4.2
     </footer>
 
     <div class="toast" id="toast"></div>
@@ -423,18 +423,36 @@
         document.getElementById('mappingFileName').textContent = file.name;
         document.getElementById('mappingDropZone').classList.add('has-file');
         try {
-            const text = await file.text();
-            const mappingData = JSON.parse(text);
-
-            // Detect format: UiPath format is an array, progress format has a mappings object
-            if (Array.isArray(mappingData)) {
-                // UiPath format - convert to internal mapping format
-                currentMappings = convertUiPathToMappings(mappingData);
-                showToast('Loaded ' + Object.keys(currentMappings).length + ' mappings from UiPath file', 'success');
+            if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                // Excel format from Save Mapping Progress
+                const data = await file.arrayBuffer();
+                const wb = XLSX.read(data);
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(ws);
+                const mappings = {};
+                rows.forEach(row => {
+                    const state = row['State'];
+                    const planName = row['Plan Name'];
+                    if (state && planName) {
+                        mappings[state + '|' + planName] = {
+                            availityPayerId: row['Payer ID'] || '',
+                            availityPayerName: row['Payer Name'] || ''
+                        };
+                    }
+                });
+                currentMappings = mappings;
+                showToast('Loaded ' + Object.keys(currentMappings).length + ' mappings from Excel file', 'success');
             } else {
-                // Progress format
-                currentMappings = mappingData.mappings || {};
-                showToast('Loaded ' + Object.keys(currentMappings).length + ' mappings', 'success');
+                const text = await file.text();
+                const mappingData = JSON.parse(text);
+                // Detect format: UiPath format is an array, progress format has a mappings object
+                if (Array.isArray(mappingData)) {
+                    currentMappings = convertUiPathToMappings(mappingData);
+                    showToast('Loaded ' + Object.keys(currentMappings).length + ' mappings from UiPath file', 'success');
+                } else {
+                    currentMappings = mappingData.mappings || {};
+                    showToast('Loaded ' + Object.keys(currentMappings).length + ' mappings', 'success');
+                }
             }
             applyMappingsToInterface();
         } catch (error) { showToast('Error: ' + error.message, 'error'); }
@@ -682,9 +700,20 @@
 
     function saveMappingProgress() {
         const name = clientName || 'Client';
-        const output = { clientName: name, lastUpdated: new Date().toISOString().split('T')[0], mappings: currentMappings };
-        downloadJson(output, 'payer_mapping_' + name + '.json');
-        showToast('Mapping progress saved to file', 'success');
+        const rows = [['State', 'Plan Name', 'Payer ID', 'Payer Name']];
+        Object.entries(currentMappings).forEach(([key, mapping]) => {
+            const [state, planName] = key.split('|');
+            rows.push([state, planName, mapping.availityPayerId || '', mapping.availityPayerName || '']);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws['!cols'] = [{wch:20},{wch:40},{wch:20},{wch:40}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Mappings');
+        // Metadata sheet for re-import
+        const meta = XLSX.utils.aoa_to_sheet([['Client Name', 'Last Updated'], [name, new Date().toISOString().split('T')[0]]]);
+        XLSX.utils.book_append_sheet(wb, meta, 'Info');
+        XLSX.writeFile(wb, 'payer_mapping_' + name + '.xlsx');
+        showToast('Mapping progress saved to Excel file', 'success');
     }
 
     function exportForUiPath() {
