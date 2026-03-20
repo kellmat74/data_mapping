@@ -4,137 +4,247 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payer Mapping Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>if(localStorage.getItem('darkMode')!=='false')document.documentElement.classList.add('dark');</script>
     <style>
+        :root {
+            --bg-body: #f7f7f7;
+            --bg-card: #ffffff;
+            --bg-card-alt: #f8f9fa;
+            --bg-accent: #f1f1f1;
+            --text-primary: #333333;
+            --text-secondary: #667085;
+            --text-muted: #888888;
+            --text-heading: #333333;
+            --text-heading-h: #555555;
+            --color-accent: #ff5100;
+            --color-accent-hover: #e04800;
+            --color-success: #27ae60;
+            --color-success-hover: #219a52;
+            --color-error: #e74c3c;
+            --color-error-hover: #c0392b;
+            --color-warning: #e67e22;
+            --border-color: #ddd;
+            --border-color-light: #eee;
+            --border-dashed: #ccc;
+            --input-bg: #ffffff;
+            --input-text: #333333;
+            --table-header-bg: #f1f1f1;
+            --table-hover: #f8f9fa;
+            --row-mapped: #e8f5e9;
+            --row-unmapped: #fff3e0;
+            --state-header-bg: #333333;
+            --stat-number: #ff5100;
+            --progress-bg: #e0e0e0;
+            --toast-bg: #333333;
+            --shadow: rgba(0,0,0,0.1);
+            --shadow-strong: rgba(0,0,0,0.2);
+            --filter-btn-bg: #ffffff;
+            --how-it-works-bg: #fff7f0;
+            --how-it-works-border: #ff5100;
+            --how-it-works-text: #444444;
+            --status-loaded-bg: #e8f5e9;
+            --status-loaded-color: #27ae60;
+            --status-new-bg: #fff3e0;
+            --status-new-color: #e67e22;
+            --dragover-bg: #e8f5e9;
+            --upload-hover-bg: #f8f9fa;
+            --btn-secondary-bg: #95a5a6;
+            --btn-secondary-hover: #7f8c8d;
+            --btn-disabled: #ccc;
+            --footer-color: #999999;
+            --link-color: #ff5100;
+            --phi-warning-color: #d32f2f;
+        }
+        html.dark {
+            --bg-body: #303030;
+            --bg-card: #282828;
+            --bg-card-alt: #2c2c2c;
+            --bg-accent: #2c2c2c;
+            --text-primary: #dfdfdf;
+            --text-secondary: #a9a9a9;
+            --text-muted: #7d7d7d;
+            --text-heading: #ffffff;
+            --text-heading-h: #a9a9a9;
+            --color-accent: #ff8927;
+            --color-accent-hover: #e07520;
+            --color-success: #07aa00;
+            --color-success-hover: #069200;
+            --color-error: #ff3232;
+            --color-error-hover: #dd2222;
+            --color-warning: #e67e22;
+            --border-color: #404040;
+            --border-color-light: #404040;
+            --border-dashed: #505050;
+            --input-bg: #353535;
+            --input-text: #dfdfdf;
+            --table-header-bg: #2c2c2c;
+            --table-hover: #353535;
+            --row-mapped: #1a3a1a;
+            --row-unmapped: #3a2a1a;
+            --state-header-bg: #2c2c2c;
+            --stat-number: #ff8927;
+            --progress-bg: #404040;
+            --toast-bg: #404040;
+            --shadow: rgba(0,0,0,0.3);
+            --shadow-strong: rgba(0,0,0,0.5);
+            --filter-btn-bg: #353535;
+            --how-it-works-bg: #3a2a1a;
+            --how-it-works-border: #ff8927;
+            --how-it-works-text: #dfdfdf;
+            --status-loaded-bg: #1a3a1a;
+            --status-loaded-color: #07aa00;
+            --status-new-bg: #3a2a1a;
+            --status-new-color: #e67e22;
+            --dragover-bg: #1a3a1a;
+            --upload-hover-bg: #353535;
+            --btn-secondary-bg: #555555;
+            --btn-secondary-hover: #666666;
+            --btn-disabled: #555555;
+            --footer-color: #7d7d7d;
+            --link-color: #ff8927;
+            --phi-warning-color: #ff3232;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #f5f5f5; color: #333; line-height: 1.6; padding: 20px;
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-body); color: var(--text-primary); line-height: 1.6; padding: 20px;
         }
         .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 10px; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+        h1 { text-align: center; color: var(--text-heading); margin-bottom: 10px; }
+        .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 30px; }
         .card {
-            background: white; border-radius: 8px; padding: 20px;
-            margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--bg-card); border-radius: 8px; padding: 20px;
+            margin-bottom: 20px; box-shadow: 0 2px 4px var(--shadow);
         }
         .card h2 {
-            color: #2c3e50; margin-bottom: 15px; font-size: 1.2em;
-            border-bottom: 2px solid #3498db; padding-bottom: 10px;
+            color: var(--text-heading); margin-bottom: 15px; font-size: 1.2em;
+            border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;
         }
         .upload-section {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
         }
         .upload-box {
-            border: 2px dashed #ccc; border-radius: 8px; padding: 20px;
+            border: 2px dashed var(--border-dashed); border-radius: 8px; padding: 20px;
             text-align: center; transition: border-color 0.3s, background 0.3s;
         }
-        .upload-box:hover { border-color: #3498db; background: #f8f9fa; }
-        .upload-box.dragover { border-color: #27ae60; background: #e8f5e9; }
-        .upload-box.has-file { border-color: #27ae60; border-style: solid; }
-        .upload-box h3 { color: #555; margin-bottom: 10px; font-size: 1em; }
-        .upload-box p { color: #888; font-size: 0.85em; margin-bottom: 10px; }
+        .upload-box:hover { border-color: var(--color-accent); background: var(--upload-hover-bg); }
+        .upload-box.dragover { border-color: var(--color-success); background: var(--dragover-bg); }
+        .upload-box.has-file { border-color: var(--color-success); border-style: solid; }
+        .upload-box h3 { color: var(--text-heading-h); margin-bottom: 10px; font-size: 1em; }
+        .upload-box p { color: var(--text-muted); font-size: 0.85em; margin-bottom: 10px; }
         .upload-box input[type="file"] { display: none; }
         .upload-btn {
-            background: #3498db; color: white; padding: 10px 20px; border: none;
+            background: var(--color-accent); color: white; padding: 10px 20px; border: none;
             border-radius: 5px; cursor: pointer; font-size: 0.9em; transition: background 0.3s;
         }
-        .upload-btn:hover { background: #2980b9; }
-        .file-name { margin-top: 10px; color: #27ae60; font-weight: 500; word-break: break-all; }
+        .upload-btn:hover { background: var(--color-accent-hover); }
+        .file-name { margin-top: 10px; color: var(--color-success); font-weight: 500; word-break: break-all; }
         .stats {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px; margin-bottom: 20px;
         }
-        .stat-box { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; }
-        .stat-box .number { font-size: 2em; font-weight: bold; color: #3498db; }
-        .stat-box .label { color: #666; font-size: 0.85em; }
+        .stat-box { background: var(--bg-card-alt); padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-box .number { font-size: 2em; font-weight: bold; color: var(--stat-number); }
+        .stat-box .label { color: var(--text-secondary); font-size: 0.85em; }
         .progress-bar {
-            width: 100%; height: 20px; background: #e0e0e0;
+            width: 100%; height: 20px; background: var(--progress-bg);
             border-radius: 10px; overflow: hidden; margin-bottom: 10px;
         }
         .progress-fill {
             height: 100%; background: linear-gradient(90deg, #27ae60, #2ecc71);
             transition: width 0.3s ease;
         }
-        .progress-text { text-align: center; color: #666; font-size: 0.9em; }
+        .progress-text { text-align: center; color: var(--text-secondary); font-size: 0.9em; }
         .state-section { margin-bottom: 25px; }
         .state-header {
-            background: #2c3e50; color: white; padding: 10px 15px;
+            background: var(--state-header-bg); color: white; padding: 10px 15px;
             border-radius: 5px 5px 0 0; font-weight: 600;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .state-badge { background: #3498db; padding: 2px 10px; border-radius: 12px; font-size: 0.85em; }
+        .state-badge { background: var(--color-accent); padding: 2px 10px; border-radius: 12px; font-size: 0.85em; }
         .mapping-table { width: 100%; border-collapse: collapse; }
         .mapping-table th {
-            background: #f1f1f1; padding: 12px; text-align: left; font-weight: 600; color: #555;
+            background: var(--table-header-bg); padding: 12px; text-align: left; font-weight: 600; color: var(--text-heading-h);
         }
-        .mapping-table td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        .mapping-table tr:hover { background: #f8f9fa; }
-        .mapping-table tr.mapped { background: #e8f5e9; }
-        .mapping-table tr.unmapped { background: #fff3e0; }
-        .plan-name { font-weight: 500; color: #2c3e50; }
-        .volume { color: #888; font-size: 0.9em; }
+        .mapping-table td { padding: 12px; border-bottom: 1px solid var(--border-color-light); vertical-align: middle; }
+        .mapping-table tr:hover { background: var(--table-hover); }
+        .mapping-table tr.mapped { background: var(--row-mapped); }
+        .mapping-table tr.unmapped { background: var(--row-unmapped); }
+        .plan-name { font-weight: 500; color: var(--text-primary); }
+        .volume { color: var(--text-muted); font-size: 0.9em; }
         .payer-select {
-            width: 100%; padding: 8px 12px; border: 1px solid #ddd;
-            border-radius: 5px; font-size: 0.9em; background: white;
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color);
+            border-radius: 5px; font-size: 0.9em; background: var(--input-bg); color: var(--input-text);
         }
-        .payer-select:focus { outline: none; border-color: #3498db; box-shadow: 0 0 0 2px rgba(52,152,219,0.2); }
-        .payer-select.mapped { border-color: #27ae60; }
-        .payer-select.not-available { border-color: #e74c3c; }
+        .payer-select:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 2px rgba(255,81,0,0.2); }
+        .payer-select.mapped { border-color: var(--color-success); }
+        .payer-select.not-available { border-color: var(--color-error); }
         .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
         .btn {
             padding: 12px 24px; border: none; border-radius: 5px;
             cursor: pointer; font-size: 1em; font-weight: 500; transition: all 0.3s;
         }
-        .btn-primary { background: #3498db; color: white; }
-        .btn-primary:hover { background: #2980b9; }
-        .btn-success { background: #27ae60; color: white; }
-        .btn-success:hover { background: #219a52; }
-        .btn-secondary { background: #95a5a6; color: white; }
-        .btn-secondary:hover { background: #7f8c8d; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-primary { background: var(--color-accent); color: white; }
+        .btn-primary:hover { background: var(--color-accent-hover); }
+        .btn-success { background: var(--color-success); color: white; }
+        .btn-success:hover { background: var(--color-success-hover); }
+        .btn-secondary { background: var(--btn-secondary-bg); color: white; }
+        .btn-secondary:hover { background: var(--btn-secondary-hover); }
+        .btn:disabled { background: var(--btn-disabled); cursor: not-allowed; }
         .hidden { display: none; }
         .search-box {
-            width: 100%; padding: 10px 15px; border: 1px solid #ddd;
+            width: 100%; padding: 10px 15px; border: 1px solid var(--border-color);
             border-radius: 5px; font-size: 1em; margin-bottom: 15px;
+            background: var(--input-bg); color: var(--input-text);
         }
-        .search-box:focus { outline: none; border-color: #3498db; }
+        .search-box:focus { outline: none; border-color: var(--color-accent); }
         .filter-buttons { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .filter-btn {
-            padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px;
-            background: white; cursor: pointer; font-size: 0.9em; transition: all 0.3s;
+            padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 20px;
+            background: var(--filter-btn-bg); color: var(--text-primary); cursor: pointer; font-size: 0.9em; transition: all 0.3s;
         }
-        .filter-btn:hover { border-color: #3498db; }
-        .filter-btn.active { background: #3498db; color: white; border-color: #3498db; }
+        .filter-btn:hover { border-color: var(--color-accent); }
+        .filter-btn.active { background: var(--color-accent); color: white; border-color: var(--color-accent); }
         .toast {
-            position: fixed; bottom: 20px; right: 20px; background: #2c3e50;
+            position: fixed; bottom: 20px; right: 20px; background: var(--toast-bg);
             color: white; padding: 15px 25px; border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2); transform: translateY(100px);
+            box-shadow: 0 4px 12px var(--shadow-strong); transform: translateY(100px);
             opacity: 0; transition: all 0.3s; z-index: 1000;
         }
         .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.success { background: #27ae60; }
-        .toast.error { background: #e74c3c; }
+        .toast.success { background: var(--color-success); }
+        .toast.error { background: var(--color-error); }
         .client-section {
             display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
         }
         .client-input {
-            flex: 1; min-width: 200px; padding: 12px 15px; border: 2px solid #3498db;
-            border-radius: 5px; font-size: 1em;
+            flex: 1; min-width: 200px; padding: 12px 15px; border: 2px solid var(--color-accent);
+            border-radius: 5px; font-size: 1em; background: var(--input-bg); color: var(--input-text);
         }
-        .client-input:focus { outline: none; border-color: #2980b9; box-shadow: 0 0 0 3px rgba(52,152,219,0.2); }
+        .client-input:focus { outline: none; border-color: var(--color-accent-hover); box-shadow: 0 0 0 3px rgba(255,81,0,0.2); }
         .client-status {
             padding: 8px 15px; border-radius: 5px; font-size: 0.9em; font-weight: 500;
         }
-        .client-status.loaded { background: #e8f5e9; color: #27ae60; }
-        .client-status.new { background: #fff3e0; color: #e67e22; }
-        .btn-clear { background: #e74c3c; color: white; padding: 8px 15px; font-size: 0.85em; }
-        .btn-clear:hover { background: #c0392b; }
+        .client-status.loaded { background: var(--status-loaded-bg); color: var(--status-loaded-color); }
+        .client-status.new { background: var(--status-new-bg); color: var(--status-new-color); }
+        .btn-clear { background: var(--color-error); color: white; padding: 8px 15px; font-size: 0.85em; }
+        .btn-clear:hover { background: var(--color-error-hover); }
         .auto-save-indicator {
-            position: fixed; top: 20px; right: 20px; background: #27ae60; color: white;
+            position: fixed; top: 20px; right: 20px; background: var(--color-success); color: white;
             padding: 8px 15px; border-radius: 5px; font-size: 0.85em;
             opacity: 0; transition: opacity 0.3s; z-index: 1000;
         }
         .auto-save-indicator.show { opacity: 1; }
+        .dark-mode-toggle {
+            position: fixed; top: 15px; right: 15px; width: 40px; height: 40px;
+            border-radius: 50%; border: none; cursor: pointer; font-size: 1.2em;
+            background: var(--bg-card); color: var(--text-primary);
+            box-shadow: 0 2px 8px var(--shadow-strong); z-index: 1001;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.3s, color 0.3s;
+        }
+        .dark-mode-toggle:hover { background: var(--bg-card-alt); }
         @media (max-width: 768px) {
             .upload-section { grid-template-columns: 1fr; }
             .action-buttons { flex-direction: column; }
@@ -143,21 +253,22 @@
     </style>
 </head>
 <body>
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode"></button>
     <div class="container">
         <h1>Payer Mapping Tool</h1>
         <p class="subtitle">Map placement file plans to portal plan names</p>
 
-        <div class="card" style="background: #f0f7ff; border-left: 4px solid #3498db;">
+        <div class="card" style="background: var(--how-it-works-bg); border-left: 4px solid var(--how-it-works-border);">
             <h2 style="margin-top: 0;">How It Works</h2>
-            <ol style="margin: 0; padding-left: 20px; color: #444; line-height: 1.8;">
-                <li>Use the <a href="phi_stripper.html" target="_blank" style="color: #3498db; font-weight: 500;">PHI Stripper Tool</a> to prepare your placement file (removes all PHI, keeps only State &amp; Payer)</li>
+            <ol style="margin: 0; padding-left: 20px; color: var(--how-it-works-text); line-height: 1.8;">
+                <li>Use the <a href="phi_stripper.html" target="_blank" style="color: var(--link-color); font-weight: 500;">PHI Stripper Tool</a> to prepare your placement file (removes all PHI, keeps only State &amp; Payer)</li>
                 <li>Enter your client name below to save/resume your progress</li>
                 <li>Upload the stripped placement summary file</li>
                 <li>Map each plan to its corresponding Availity payer or portal</li>
                 <li><strong>Save Mapping Progress</strong> — export your work as Excel to pick up where you left off</li>
                 <li><strong>Export for UiPath</strong> — generate the JSON file for automation import</li>
             </ol>
-            <p style="margin-top: 10px; margin-bottom: 0;"><a href="docs/Payer Mapping Tool - User Guide.pdf" target="_blank" style="color: #3498db; font-weight: 500;">📄 Download User Guide (PDF)</a></p>
+            <p style="margin-top: 10px; margin-bottom: 0;"><a href="docs/Payer Mapping Tool - User Guide.pdf" target="_blank" style="color: var(--link-color); font-weight: 500;">📄 Download User Guide (PDF)</a></p>
         </div>
 
         <div class="card">
@@ -165,14 +276,14 @@
             <div class="client-section" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                 <input type="text" class="client-input" id="clientName" placeholder="Client name (e.g., UTSW)" style="flex: 1; min-width: 180px;">
                 <input type="password" class="client-input" id="clientPassphrase" placeholder="Passphrase" style="flex: 0.7; min-width: 140px;">
-                <button class="btn" id="connectBtn" style="background: #3498db; color: white; white-space: nowrap;">Connect</button>
+                <button class="btn" id="connectBtn" style="background: var(--color-accent); color: white; white-space: nowrap;">Connect</button>
                 <span id="connectionStatus" style="font-size: 0.85em; white-space: nowrap;"></span>
             </div>
             <div class="client-section" style="margin-top: 8px;">
                 <span class="client-status hidden" id="clientStatus"></span>
                 <button class="btn btn-clear hidden" id="clearDataBtn">Clear Saved Data</button>
             </div>
-            <p style="color: #666; font-size: 0.85em;">Enter your client name and passphrase to connect to cloud storage. Mappings sync automatically across all browsers.</p>
+            <p style="color: var(--text-secondary); font-size: 0.85em;">Enter your client name and passphrase to connect to cloud storage. Mappings sync automatically across all browsers.</p>
         </div>
 
         <div class="card">
@@ -180,8 +291,8 @@
             <div class="upload-section">
                 <div class="upload-box" id="placementDropZone">
                     <h3>Placement Summary File *</h3>
-                    <p style="color: #d32f2f; font-weight: bold; margin-bottom: 4px;">⚠ Do NOT upload raw placement files containing PHI.</p>
-                    <p style="margin-bottom: 4px;">Use the <a href="phi_stripper.html" target="_blank" style="color: #3498db; font-weight: 500;">PHI Stripper Tool</a> to prepare your file first.</p>
+                    <p style="color: var(--phi-warning-color); font-weight: bold; margin-bottom: 4px;">⚠ Do NOT upload raw placement files containing PHI.</p>
+                    <p style="margin-bottom: 4px;">Use the <a href="phi_stripper.html" target="_blank" style="color: var(--link-color); font-weight: 500;">PHI Stripper Tool</a> to prepare your file first.</p>
                     <p>Upload your placement summary file (.xlsx or .csv)</p>
                     <input type="file" id="placementFile" accept=".xlsx,.csv">
                     <button class="upload-btn" onclick="document.getElementById('placementFile').click()">Choose File</button>
@@ -238,8 +349,8 @@
         </div>
     </div>
 
-    <footer style="text-align: center; color: #999; font-size: 0.8em; margin-top: 40px; padding: 20px;">
-        Payer Mapping Tool v5.1
+    <footer style="text-align: center; color: var(--footer-color); font-size: 0.8em; margin-top: 40px; padding: 20px;">
+        Payer Mapping Tool v5.2
     </footer>
 
     <div class="toast" id="toast"></div>
@@ -315,10 +426,10 @@
         const el = document.getElementById('connectionStatus');
         if (status === 'connected') {
             el.innerHTML = '☁️ Connected';
-            el.style.color = '#27ae60';
+            el.style.color = 'var(--color-success)';
         } else if (status === 'offline') {
             el.innerHTML = '💾 Local only';
-            el.style.color = '#e67e22';
+            el.style.color = 'var(--color-warning)';
             firebaseConnected = false;
         } else if (status === 'none') {
             el.innerHTML = '';
@@ -933,6 +1044,22 @@
         div.textContent = text;
         return div.innerHTML;
     }
+
+    // Dark mode toggle
+    (function() {
+        const toggle = document.getElementById('darkModeToggle');
+        function updateToggle() {
+            const isDark = document.documentElement.classList.contains('dark');
+            toggle.textContent = isDark ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        }
+        updateToggle();
+        toggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            updateToggle();
+        });
+    })();
     </script>
 </body>
 </html>

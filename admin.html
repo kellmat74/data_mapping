@@ -4,93 +4,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payer Mapping Tool — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>if(localStorage.getItem('darkMode')!=='false')document.documentElement.classList.add('dark');</script>
     <style>
+        :root {
+            --bg-body: #f7f7f7; --bg-card: #ffffff; --bg-card-alt: #f8f9fa; --bg-accent: #f1f1f1;
+            --text-primary: #333333; --text-secondary: #667085; --text-muted: #888888; --text-heading: #333333;
+            --color-accent: #ff5100; --color-accent-hover: #e04800;
+            --color-success: #27ae60; --color-success-hover: #219a52;
+            --color-error: #e74c3c; --color-error-hover: #c0392b;
+            --color-warning: #e67e22;
+            --border-color: #ddd; --border-color-light: #eee;
+            --input-bg: #ffffff; --input-text: #333333;
+            --table-header-bg: #333333; --table-hover: #f8f9fa;
+            --modal-bg: #ffffff; --modal-overlay: rgba(0,0,0,0.5);
+            --shadow: rgba(0,0,0,0.1); --shadow-strong: rgba(0,0,0,0.3);
+            --toast-bg: #333333;
+            --btn-secondary-bg: #95a5a6; --btn-secondary-hover: #7f8c8d; --btn-disabled: #ccc;
+            --badge-green-bg: #e8f5e9; --badge-green-color: #27ae60;
+            --badge-orange-bg: #fff3e0; --badge-orange-color: #e67e22;
+            --badge-gray-bg: #f0f0f0; --badge-gray-color: #888;
+            --footer-color: #999; --link-color: #ff5100;
+            --detail-th-bg: #f1f1f1; --detail-th-color: #555;
+            --modal-close-color: #999; --modal-close-hover: #333;
+        }
+        html.dark {
+            --bg-body: #303030; --bg-card: #282828; --bg-card-alt: #2c2c2c; --bg-accent: #2c2c2c;
+            --text-primary: #dfdfdf; --text-secondary: #a9a9a9; --text-muted: #7d7d7d; --text-heading: #ffffff;
+            --color-accent: #ff8927; --color-accent-hover: #e07520;
+            --color-success: #07aa00; --color-success-hover: #069200;
+            --color-error: #ff3232; --color-error-hover: #dd2222;
+            --color-warning: #e67e22;
+            --border-color: #404040; --border-color-light: #404040;
+            --input-bg: #353535; --input-text: #dfdfdf;
+            --table-header-bg: #2c2c2c; --table-hover: #353535;
+            --modal-bg: #282828; --modal-overlay: rgba(0,0,0,0.7);
+            --shadow: rgba(0,0,0,0.3); --shadow-strong: rgba(0,0,0,0.5);
+            --toast-bg: #404040;
+            --btn-secondary-bg: #555555; --btn-secondary-hover: #666666; --btn-disabled: #555555;
+            --badge-green-bg: #1a3a1a; --badge-green-color: #07aa00;
+            --badge-orange-bg: #3a2a1a; --badge-orange-color: #e67e22;
+            --badge-gray-bg: #353535; --badge-gray-color: #7d7d7d;
+            --footer-color: #7d7d7d; --link-color: #ff8927;
+            --detail-th-bg: #2c2c2c; --detail-th-color: #a9a9a9;
+            --modal-close-color: #7d7d7d; --modal-close-hover: #dfdfdf;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #f5f5f5; color: #333; line-height: 1.6; padding: 20px;
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-body); color: var(--text-primary); line-height: 1.6; padding: 20px;
         }
         .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 10px; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+        h1 { text-align: center; color: var(--text-heading); margin-bottom: 10px; }
+        .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 30px; }
         .card {
-            background: white; border-radius: 8px; padding: 20px;
-            margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--bg-card); border-radius: 8px; padding: 20px;
+            margin-bottom: 20px; box-shadow: 0 2px 4px var(--shadow);
         }
         .card h2 {
-            color: #2c3e50; margin-bottom: 15px; font-size: 1.2em;
-            border-bottom: 2px solid #3498db; padding-bottom: 10px;
+            color: var(--text-heading); margin-bottom: 15px; font-size: 1.2em;
+            border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;
         }
         .btn {
             padding: 10px 20px; border: none; border-radius: 5px;
             cursor: pointer; font-size: 0.9em; font-weight: 500; transition: all 0.3s;
         }
-        .btn-primary { background: #3498db; color: white; }
-        .btn-primary:hover { background: #2980b9; }
-        .btn-success { background: #27ae60; color: white; }
-        .btn-success:hover { background: #219a52; }
-        .btn-danger { background: #e74c3c; color: white; }
-        .btn-danger:hover { background: #c0392b; }
-        .btn-secondary { background: #95a5a6; color: white; }
-        .btn-secondary:hover { background: #7f8c8d; }
+        .btn-primary { background: var(--color-accent); color: white; }
+        .btn-primary:hover { background: var(--color-accent-hover); }
+        .btn-success { background: var(--color-success); color: white; }
+        .btn-success:hover { background: var(--color-success-hover); }
+        .btn-danger { background: var(--color-error); color: white; }
+        .btn-danger:hover { background: var(--color-error-hover); }
+        .btn-secondary { background: var(--btn-secondary-bg); color: white; }
+        .btn-secondary:hover { background: var(--btn-secondary-hover); }
         .btn-sm { padding: 6px 12px; font-size: 0.8em; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn:disabled { background: var(--btn-disabled); cursor: not-allowed; }
         .hidden { display: none; }
         .toast {
-            position: fixed; bottom: 20px; right: 20px; background: #2c3e50;
+            position: fixed; bottom: 20px; right: 20px; background: var(--toast-bg);
             color: white; padding: 15px 25px; border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2); transform: translateY(100px);
+            box-shadow: 0 4px 12px var(--shadow-strong); transform: translateY(100px);
             opacity: 0; transition: all 0.3s; z-index: 1000;
         }
         .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.success { background: #27ae60; }
-        .toast.error { background: #e74c3c; }
+        .toast.success { background: var(--color-success); }
+        .toast.error { background: var(--color-error); }
         .login-form {
             max-width: 400px; margin: 100px auto; text-align: center;
         }
         .login-form input {
-            width: 100%; padding: 12px 15px; border: 2px solid #3498db;
+            width: 100%; padding: 12px 15px; border: 2px solid var(--color-accent);
             border-radius: 5px; font-size: 1em; margin-bottom: 15px;
+            background: var(--input-bg); color: var(--input-text);
         }
-        .login-form input:focus { outline: none; border-color: #2980b9; box-shadow: 0 0 0 3px rgba(52,152,219,0.2); }
+        .login-form input:focus { outline: none; border-color: var(--color-accent-hover); box-shadow: 0 0 0 3px rgba(255,81,0,0.2); }
         .client-table { width: 100%; border-collapse: collapse; }
         .client-table th {
-            background: #2c3e50; color: white; padding: 12px 15px; text-align: left; font-weight: 500;
+            background: var(--table-header-bg); color: white; padding: 12px 15px; text-align: left; font-weight: 500;
         }
-        .client-table td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        .client-table tr:hover { background: #f8f9fa; }
+        .client-table td { padding: 12px 15px; border-bottom: 1px solid var(--border-color-light); vertical-align: middle; color: var(--text-primary); }
+        .client-table tr:hover { background: var(--table-hover); }
         .client-table .actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .create-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .create-form input {
-            padding: 10px 15px; border: 2px solid #ddd; border-radius: 5px; font-size: 0.95em;
+            padding: 10px 15px; border: 2px solid var(--border-color); border-radius: 5px; font-size: 0.95em;
+            background: var(--input-bg); color: var(--input-text);
         }
-        .create-form input:focus { outline: none; border-color: #3498db; }
+        .create-form input:focus { outline: none; border-color: var(--color-accent); }
         .badge {
             display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 500;
         }
-        .badge-green { background: #e8f5e9; color: #27ae60; }
-        .badge-orange { background: #fff3e0; color: #e67e22; }
-        .badge-gray { background: #f0f0f0; color: #888; }
+        .badge-green { background: var(--badge-green-bg); color: var(--badge-green-color); }
+        .badge-orange { background: var(--badge-orange-bg); color: var(--badge-orange-color); }
+        .badge-gray { background: var(--badge-gray-bg); color: var(--badge-gray-color); }
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999;
+            background: var(--modal-overlay); display: flex; align-items: center; justify-content: center; z-index: 999;
         }
         .modal {
-            background: white; border-radius: 8px; padding: 25px; max-width: 900px; width: 90%;
-            max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            background: var(--modal-bg); border-radius: 8px; padding: 25px; max-width: 900px; width: 90%;
+            max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 20px var(--shadow-strong);
         }
-        .modal h3 { color: #2c3e50; margin-bottom: 15px; }
-        .modal-close { float: right; cursor: pointer; font-size: 1.5em; color: #999; background: none; border: none; }
-        .modal-close:hover { color: #333; }
+        .modal h3 { color: var(--text-heading); margin-bottom: 15px; }
+        .modal-close { float: right; cursor: pointer; font-size: 1.5em; color: var(--modal-close-color); background: none; border: none; }
+        .modal-close:hover { color: var(--modal-close-hover); }
         .mapping-detail-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .mapping-detail-table th { background: #f1f1f1; padding: 10px; text-align: left; font-weight: 600; color: #555; font-size: 0.9em; }
-        .mapping-detail-table td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+        .mapping-detail-table th { background: var(--detail-th-bg); padding: 10px; text-align: left; font-weight: 600; color: var(--detail-th-color); font-size: 0.9em; }
+        .mapping-detail-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color-light); font-size: 0.9em; color: var(--text-primary); }
         nav { text-align: center; margin-bottom: 20px; }
-        nav a { color: #3498db; text-decoration: none; margin: 0 10px; font-size: 0.9em; }
+        nav a { color: var(--link-color); text-decoration: none; margin: 0 10px; font-size: 0.9em; }
         nav a:hover { text-decoration: underline; }
+        .dark-mode-toggle {
+            position: fixed; top: 15px; right: 15px; width: 40px; height: 40px;
+            border-radius: 50%; border: none; cursor: pointer; font-size: 1.2em;
+            background: var(--bg-card); color: var(--text-primary);
+            box-shadow: 0 2px 8px var(--shadow-strong); z-index: 1001;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.3s, color 0.3s;
+        }
+        .dark-mode-toggle:hover { background: var(--bg-card-alt); }
     </style>
 </head>
 <body>
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode"></button>
     <div class="container">
         <h1>Payer Mapping Tool — Admin</h1>
         <nav><a href="index.html">Mapping Tool</a> | <a href="phi_stripper.html">PHI Stripper</a> | <a href="docs/Payer Mapping Tool - Admin Guide.pdf" target="_blank">Admin Guide</a></nav>
@@ -122,7 +178,7 @@
             <div class="card">
                 <h2>Clients</h2>
                 <div id="clientListContainer">
-                    <p style="color: #888;">Loading clients...</p>
+                    <p style="color: var(--text-muted);">Loading clients...</p>
                 </div>
             </div>
         </div>
@@ -240,7 +296,7 @@
         try {
             const snapshot = await db.collection('clients').get();
             if (snapshot.empty) {
-                container.innerHTML = '<p style="color: #888;">No clients yet. Create one above.</p>';
+                container.innerHTML = '<p style="color: var(--text-muted);">No clients yet. Create one above.</p>';
                 return;
             }
 
@@ -263,7 +319,7 @@
                         '<button class="btn btn-primary btn-sm" onclick="viewMappings(\'' + escapeHtml(data.clientName) + '\')">View</button>' +
                         '<button class="btn btn-success btn-sm" onclick="exportExcel(\'' + escapeHtml(data.clientName) + '\')">Excel</button>' +
                         '<button class="btn btn-secondary btn-sm" onclick="exportUiPath(\'' + escapeHtml(data.clientName) + '\')">UiPath</button>' +
-                        '<button class="btn btn-sm" style="background:#e67e22;color:white;" onclick="editClient(\'' + escapeHtml(data.clientName) + '\')">Edit</button>' +
+                        '<button class="btn btn-sm" style="background:var(--color-warning);color:white;" onclick="editClient(\'' + escapeHtml(data.clientName) + '\')">Edit</button>' +
                         '<button class="btn btn-danger btn-sm" onclick="deleteClient(\'' + escapeHtml(data.clientName) + '\')">Delete</button>' +
                         '<button class="btn btn-sm" style="background:#8e44ad;color:white;" onclick="resetPassphrase(\'' + escapeHtml(data.clientName) + '\')">Reset Pass</button>' +
                     '</td></tr>';
@@ -272,7 +328,7 @@
             html += '</tbody></table>';
             container.innerHTML = html;
         } catch (e) {
-            container.innerHTML = '<p style="color: #e74c3c;">Error loading clients: ' + e.message + '</p>';
+            container.innerHTML = '<p style="color: var(--color-error);">Error loading clients: ' + e.message + '</p>';
         }
     }
 
@@ -289,7 +345,7 @@
                 '<h3>' + escapeHtml(name) + ' — ' + entries.length + ' Mappings</h3>';
 
             if (entries.length === 0) {
-                html += '<p style="color:#888;">No mappings yet.</p>';
+                html += '<p style="color:var(--text-muted);">No mappings yet.</p>';
             } else {
                 html += '<table class="mapping-detail-table"><thead><tr>' +
                     '<th>State</th><th>Plan Name</th><th>Payer ID</th><th>Payer Name</th>' +
@@ -397,10 +453,26 @@
             showToast('Error: ' + e.message, 'error');
         }
     }
+
+    // Dark mode toggle
+    (function() {
+        const toggle = document.getElementById('darkModeToggle');
+        function updateToggle() {
+            const isDark = document.documentElement.classList.contains('dark');
+            toggle.textContent = isDark ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        }
+        updateToggle();
+        toggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            updateToggle();
+        });
+    })();
     </script>
 
-    <footer style="text-align: center; color: #999; font-size: 0.8em; margin-top: 40px; padding: 20px;">
-        Payer Mapping Tool — Admin Dashboard v5.1
+    <footer style="text-align: center; color: var(--footer-color); font-size: 0.8em; margin-top: 40px; padding: 20px;">
+        Payer Mapping Tool — Admin Dashboard v5.2
     </footer>
 </body>
 </html>
