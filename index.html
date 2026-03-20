@@ -147,6 +147,18 @@
         <h1>Payer Mapping Tool</h1>
         <p class="subtitle">Map placement file plans to portal plan names</p>
 
+        <div class="card" style="background: #f0f7ff; border-left: 4px solid #3498db;">
+            <h2 style="margin-top: 0;">How It Works</h2>
+            <ol style="margin: 0; padding-left: 20px; color: #444; line-height: 1.8;">
+                <li>Use the <a href="phi_stripper.html" target="_blank" style="color: #3498db; font-weight: 500;">PHI Stripper Tool</a> to prepare your placement file (removes all PHI, keeps only State &amp; Payer)</li>
+                <li>Enter your client name below to save/resume your progress</li>
+                <li>Upload the stripped placement summary file</li>
+                <li>Map each plan to its corresponding Availity payer or portal</li>
+                <li><strong>Save Mapping Progress</strong> — export your work as Excel to pick up where you left off</li>
+                <li><strong>Export for UiPath</strong> — generate the JSON file for automation import</li>
+            </ol>
+        </div>
+
         <div class="card">
             <h2>Client Setup</h2>
             <div class="client-section">
@@ -221,7 +233,7 @@
     </div>
 
     <footer style="text-align: center; color: #999; font-size: 0.8em; margin-top: 40px; padding: 20px;">
-        Payer Mapping Tool v4.7
+        Payer Mapping Tool v4.8
     </footer>
 
     <div class="toast" id="toast"></div>
