@@ -351,7 +351,7 @@
     </div>
 
     <footer style="text-align: center; color: var(--footer-color); font-size: 0.8em; margin-top: 40px; padding: 20px;">
-        Payer Mapping Tool v5.5
+        Payer Mapping Tool v5.6
     </footer>
 
     <div class="toast" id="toast"></div>
@@ -761,7 +761,12 @@
                     showToast('Loaded ' + Object.keys(currentMappings).length + ' mappings', 'success');
                 }
             }
-            applyMappingsToInterface();
+            // If no placement file loaded yet, build plansByState from mappings
+            if (Object.keys(plansByState).length === 0) {
+                buildPlansFromMappings();
+            } else {
+                applyMappingsToInterface();
+            }
         } catch (error) { showToast('Error: ' + error.message, 'error'); }
     }
 
@@ -855,6 +860,26 @@
         return found;
     }
 
+    function buildPlansFromMappings() {
+        plansByState = {};
+        Object.entries(currentMappings).forEach(([key, mapping]) => {
+            const [state, planName] = key.split('|');
+            if (!state || !planName) return;
+            const stateAbbrev = STATE_ABBREV[state] || state;
+            if (!plansByState[state]) plansByState[state] = [];
+            plansByState[state].push({ planName: planName, stateAbbrev: stateAbbrev, volume: null });
+        });
+        // Sort alphabetically within each state (no volume to sort by)
+        Object.keys(plansByState).forEach(state => {
+            plansByState[state].sort((a, b) => a.planName.localeCompare(b.planName));
+        });
+        document.getElementById('statsSection').classList.remove('hidden');
+        document.getElementById('mappingSection').classList.remove('hidden');
+        document.getElementById('actionsSection').classList.remove('hidden');
+        renderMappingInterface();
+        updateStats();
+    }
+
     function processPlacementData() {
         plansByState = {};
         const sampleRow = placementData[0] || {};
@@ -939,7 +964,7 @@
 
         return '<tr class="' + rowClass + '">' +
             '<td class="plan-name">' + escapeHtml(plan.planName) + '</td>' +
-            '<td class="volume">' + plan.volume.toLocaleString() + '</td>' +
+            '<td class="volume">' + (plan.volume !== null ? plan.volume.toLocaleString() : '—') + '</td>' +
             '<td><select class="payer-select ' + selectClass + '" data-plan="' + escapeHtml(plan.planName) + '" data-state="' + escapeHtml(state) + '">' +
             '<option value="">-- Select Payer --</option>' +
             '<option value="not available"' + (mapping?.availityPayerId === 'not available' ? ' selected' : '') + '>Not In Availity</option>' +
@@ -1021,7 +1046,8 @@
         // Metadata sheet for re-import
         const meta = XLSX.utils.aoa_to_sheet([['Client Name', 'Last Updated'], [name, new Date().toISOString().split('T')[0]]]);
         XLSX.utils.book_append_sheet(wb, meta, 'Info');
-        XLSX.writeFile(wb, 'payer_mapping_' + name + '.xlsx');
+        const timestamp = new Date().toISOString().split('T')[0];
+        XLSX.writeFile(wb, name + '_mapping_' + timestamp + '.xlsx');
         showToast('Mapping progress saved to Excel file', 'success');
     }
 
@@ -1048,7 +1074,8 @@
             return a.AvailityPayerID.localeCompare(b.AvailityPayerID);
         });
         const name = clientName || 'Client';
-        downloadJson(output, name + '_uipath.json');
+        const timestamp = new Date().toISOString().split('T')[0];
+        downloadJson(output, name + '_uipath_' + timestamp + '.json');
         showToast('UiPath JSON exported', 'success');
     }
 
