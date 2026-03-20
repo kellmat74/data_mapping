@@ -264,7 +264,8 @@
 
     // Create Client
     document.getElementById('createClientBtn').addEventListener('click', async () => {
-        const name = document.getElementById('newClientName').value.trim();
+        const name = document.getElementById('newClientName').value.trim().toUpperCase();
+        document.getElementById('newClientName').value = name;
         const passphrase = document.getElementById('newClientPassphrase').value.trim();
         if (!name || name.length < 2) { showToast('Client name must be at least 2 characters', 'error'); return; }
         if (!passphrase) { showToast('Enter a passphrase for the client', 'error'); return; }
